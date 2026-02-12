@@ -842,16 +842,7 @@ nav.scrolled .nav-toggle span { background: var(--brown-dark); }
 }
 .difficulty-bar span.active { background: var(--terracotta); }
 
-@media (max-width: 768px) {
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(5, 160px);
-  }
-  .gallery-grid .g-wide { grid-column: span 1; }
-  .cuisine-grid { grid-template-columns: 1fr; }
-  .elevation-svg { height: 200px; }
-  .elevation-labels { flex-wrap: wrap; gap: 8px; justify-content: center; }
-}
+/* Responsive rules moved to main RESPONSIVE section below */
 
 /* ========== SUSTAINABILITY ========== */
 .sustainability {
@@ -966,18 +957,19 @@ footer {
 }
 
 /* ========== RESPONSIVE ========== */
+
+/* ---------- Tablet landscape (1024px) ---------- */
 @media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .sustain-content {
-    grid-template-columns: 1fr;
-  }
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .sustain-content { grid-template-columns: 1fr; gap: 36px; }
+  .day-card { width: 44%; }
 }
 
+/* ---------- Tablet portrait (768px) ---------- */
 @media (max-width: 768px) {
-  section { padding: 72px 0; }
+  section { padding: 64px 0; }
 
+  /* Nav → hamburger */
   .nav-links { display: none; }
   .nav-links.open {
     display: flex;
@@ -988,6 +980,7 @@ footer {
     right: 0;
     background: rgba(255,248,240,0.98);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: 24px;
     gap: 16px;
     box-shadow: var(--shadow-md);
@@ -995,12 +988,18 @@ footer {
   .nav-links.open a { color: var(--text) !important; font-size: 1rem; }
   .nav-toggle { display: flex; }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .stats-grid .stat-card:last-child {
-    grid-column: 1 / -1;
-  }
+  /* Hero */
+  .hero { min-height: 600px; }
+  .hero-tag { font-size: 0.7rem; padding: 6px 16px; }
+  .hero-subtitle { font-size: 1rem; margin-bottom: 32px; }
+  .btn-primary { padding: 14px 28px; font-size: 0.9rem; }
+  .hero-scroll { display: none; }
+
+  /* About stats */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .stats-grid .stat-card:last-child { grid-column: 1 / -1; }
+  .stat-card { padding: 24px 16px; }
+  .stat-number { font-size: 1.8rem; }
 
   /* Itinerary: single column */
   .timeline::before { left: 20px; }
@@ -1009,7 +1008,7 @@ footer {
   .day-card:nth-child(even) {
     width: calc(100% - 50px);
     margin-left: 50px;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
   .day-dot,
   .day-card:nth-child(odd) .day-dot,
@@ -1017,21 +1016,158 @@ footer {
     left: -40px;
     right: auto;
   }
+  .day-img { height: 180px; }
+  .day-body { padding: 20px; }
+  .day-title { font-size: 1.2rem; }
 
-  .activities-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* Schedule table in expanded cards */
+  .schedule-table td:first-child { font-size: 0.75rem; width: 90px; }
+  .schedule-table td:last-child { display: none; }
 
-  #route-map { height: 380px; }
+  /* Gallery */
+  .gallery { padding: 64px 0; }
+
+  /* Map */
+  #route-map { height: 360px; border-radius: var(--radius); }
+
+  /* Cuisine */
+  .cuisine-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Activities */
+  .activities-grid { grid-template-columns: repeat(2, 1fr); }
+  .activity-card { padding: 24px 18px; }
+
+  /* Elevation */
+  .elevation-chart { padding: 32px 20px 50px; }
+
+  /* Sustainability */
+  .sustain-content { grid-template-columns: 1fr; }
+  .impact-table td { padding: 10px 12px; font-size: 0.85rem; }
+
+  /* Section headings */
+  .section-title { font-size: clamp(1.6rem, 5vw, 2.4rem); }
+  .section-desc { font-size: 1rem; }
 }
 
+/* ---------- Phone (480px) ---------- */
 @media (max-width: 480px) {
+  section { padding: 48px 0; }
   .container { padding: 0 16px; }
+
+  /* Hero */
+  .hero { min-height: 520px; }
+  .hero h1 { font-size: 2.2rem; }
+  .hero-tag { margin-bottom: 16px; }
+  .hero-subtitle { font-size: 0.9rem; line-height: 1.5; margin-bottom: 24px; }
+  .btn-primary { padding: 12px 24px; font-size: 0.85rem; }
+
+  /* About stats */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stats-grid .stat-card:last-child { grid-column: 1 / -1; }
+  .stat-card { padding: 20px 12px; border-radius: var(--radius); }
+  .stat-number { font-size: 1.6rem; }
+  .stat-icon { font-size: 1.5rem; }
+  .stat-label { font-size: 0.78rem; }
+
+  /* Itinerary */
+  .timeline::before { left: 14px; }
+  .day-card,
+  .day-card:nth-child(odd),
+  .day-card:nth-child(even) {
+    width: calc(100% - 38px);
+    margin-left: 38px;
+    margin-bottom: 20px;
+  }
+  .day-dot,
+  .day-card:nth-child(odd) .day-dot,
+  .day-card:nth-child(even) .day-dot {
+    left: -32px;
+    width: 14px;
+    height: 14px;
+    box-shadow: 0 0 0 2px var(--terracotta);
+  }
+  .day-img { height: 150px; }
+  .day-body { padding: 16px; }
+  .day-title { font-size: 1.1rem; }
+  .day-text { font-size: 0.88rem; }
+  .day-tags { gap: 6px; }
+  .day-tag { font-size: 0.72rem; padding: 3px 8px; }
+  .day-expanded { font-size: 0.82rem; }
+  .schedule-table { font-size: 0.78rem; }
+  .schedule-table td { padding: 5px 4px; }
+  .schedule-table td:first-child { width: 78px; font-size: 0.7rem; }
+
+  /* Gallery */
+  .gallery { padding: 48px 0; }
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .gallery-grid .g-item { height: 130px; }
+  .gallery-grid .g-item .g-caption { font-size: 0.72rem; padding: 16px 10px 8px; }
+
+  /* Map */
+  #route-map { height: 280px; border-radius: var(--radius); }
+  .leaflet-popup-content { margin: 10px 14px !important; font-size: 0.82rem !important; }
+
+  /* Cuisine */
+  .cuisine-grid { grid-template-columns: 1fr; gap: 16px; }
+  .dish-card { padding: 22px 18px; }
+  .dish-name { font-size: 1.05rem; }
+
+  /* Activities */
+  .activities-grid { grid-template-columns: 1fr; gap: 16px; }
+  .activity-card { padding: 24px 18px; }
+  .activity-icon { font-size: 2rem; }
+
+  /* Elevation */
+  .elevation-chart { padding: 24px 12px 44px; }
+  .elevation-svg { height: 180px; }
+  .elevation-labels { gap: 4px; padding: 0; }
+  .elevation-label { max-width: 60px; font-size: 0.6rem; }
+  .elevation-label strong { font-size: 0.68rem; }
+  .elev-y-axis { font-size: 0.58rem; left: 4px; }
+
+  /* Practical */
+  .practical-grid { grid-template-columns: 1fr; gap: 16px; }
+  .info-card { padding: 24px 20px; }
+  .info-card h3 { font-size: 1.05rem; }
+
+  /* Sustainability */
+  .impact-table td { padding: 8px 10px; font-size: 0.8rem; }
+  .impact-table th { padding: 8px 10px; font-size: 0.65rem; }
+  .eco-list li { font-size: 0.88rem; gap: 10px; }
+  .eco-list .check { width: 24px; height: 24px; font-size: 0.75rem; }
+
+  /* Footer */
+  footer { padding: 36px 0; }
+  .footer-logo { font-size: 1.2rem; }
+}
+
+/* ---------- Very small phone (360px) ---------- */
+@media (max-width: 360px) {
+  .hero h1 { font-size: 1.9rem; }
+  .hero-subtitle { font-size: 0.82rem; }
   .stats-grid { grid-template-columns: 1fr; }
   .stats-grid .stat-card:last-child { grid-column: auto; }
-  .activities-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 2.4rem; }
-  #route-map { height: 300px; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-grid .g-item { height: 180px; }
+  .day-card,
+  .day-card:nth-child(odd),
+  .day-card:nth-child(even) {
+    width: 100%;
+    margin-left: 0;
+  }
+  .timeline::before { display: none; }
+  .day-dot { display: none; }
+  .elevation-labels { flex-direction: column; align-items: center; }
+}
+
+/* ---------- Touch device improvements ---------- */
+@media (hover: none) {
+  .gallery-grid .g-item .g-caption { opacity: 1; }
+  .day-card .day-inner { box-shadow: var(--shadow-sm); }
+  .activity-card::before { transform: scaleX(1); }
 }
 </style>
 </head>
@@ -1869,9 +2005,12 @@ const routeCoords = [
   [40.5333, 72.8000]   // Osh
 ];
 
+const isMobile = window.innerWidth <= 768;
 const map = L.map('route-map', {
-  scrollWheelZoom: false
-}).setView([41.8, 75.5], 7);
+  scrollWheelZoom: false,
+  dragging: !isMobile,
+  tap: !isMobile
+}).setView([41.8, 75.5], isMobile ? 6 : 7);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
