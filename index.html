@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Last Caravan — 10-Day Ecotourism Route Across Kyrgyzstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --terracotta: #C65D3E;
+  --terracotta-dark: #A84B30;
+  --brown-dark: #2C1810;
+  --sand: #F5E6D3;
+  --cream: #FFF8F0;
+  --sage: #6B8E6B;
+  --sage-dark: #527A52;
+  --text: #3A2A1F;
+  --text-light: #7A6A5F;
+  --white: #FFFFFF;
+  --shadow-sm: 0 2px 8px rgba(44,24,16,0.08);
+  --shadow-md: 0 4px 20px rgba(44,24,16,0.12);
+  --shadow-lg: 0 8px 40px rgba(44,24,16,0.16);
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: var(--cream);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  padding: 100px 0;
+}
+
+/* Scroll animations */
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ========== NAVIGATION ========== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 16px 0;
+  transition: background 0.4s ease, box-shadow 0.4s ease, padding 0.4s ease;
+}
+nav.scrolled {
+  background: rgba(255,248,240,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+  padding: 10px 0;
+}
+nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--white);
+  text-decoration: none;
+  transition: color 0.4s ease;
+}
+nav.scrolled .nav-logo { color: var(--brown-dark); }
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.3s ease;
+}
+.nav-links a:hover { color: var(--white); }
+nav.scrolled .nav-links a { color: var(--text-light); }
+nav.scrolled .nav-links a:hover { color: var(--terracotta); }
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: background 0.4s ease;
+}
+nav.scrolled .nav-toggle span { background: var(--brown-dark); }
+
+/* ========== HERO ========== */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 0;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    url('images/hero-kyrgyzstan.jpg') center/cover no-repeat;
+  background-color: var(--brown-dark);
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(44,24,16,0.35) 0%,
+    rgba(44,24,16,0.15) 30%,
+    rgba(44,24,16,0.2) 60%,
+    rgba(44,24,16,0.65) 100%);
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 24px;
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 8px 20px;
+  border-radius: 30px;
+  margin-bottom: 28px;
+}
+.hero h1 {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  color: var(--white);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--sand);
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255,255,255,0.85);
+  font-weight: 300;
+  margin-bottom: 44px;
+  line-height: 1.6;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--terracotta);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: var(--terracotta-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(198,93,62,0.4);
+}
+.btn-primary svg { transition: transform 0.3s ease; }
+.btn-primary:hover svg { transform: translateY(2px); }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: bounce 2s infinite;
+}
+.hero-scroll span {
+  display: block;
+  width: 24px;
+  height: 40px;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 12px;
+  position: relative;
+}
+.hero-scroll span::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+  animation: scrollDot 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+@keyframes scrollDot {
+  0% { opacity: 1; top: 8px; }
+  100% { opacity: 0; top: 20px; }
+}
+
+/* ========== ABOUT ========== */
+.about {
+  background: var(--white);
+}
+.about-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.section-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--brown-dark);
+  margin-bottom: 20px;
+}
+.section-desc {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.8;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.stat-card {
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: 36px 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+.stat-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  color: var(--terracotta);
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ========== ITINERARY ========== */
+.itinerary {
+  background: var(--cream);
+}
+.itinerary-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.timeline {
+  position: relative;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--terracotta), var(--sage));
+  border-radius: 2px;
+}
+.day-card {
+  position: relative;
+  width: 45%;
+  margin-bottom: 48px;
+  cursor: pointer;
+}
+.day-card:nth-child(odd) {
+  margin-left: 0;
+}
+.day-card:nth-child(even) {
+  margin-left: 55%;
+}
+.day-dot {
+  position: absolute;
+  top: 36px;
+  width: 18px;
+  height: 18px;
+  background: var(--terracotta);
+  border: 4px solid var(--cream);
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 0 3px var(--terracotta);
+}
+.day-card:nth-child(odd) .day-dot {
+  right: -36px;
+}
+.day-card:nth-child(even) .day-dot {
+  left: -36px;
+}
+.day-inner {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.day-card:hover .day-inner {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.day-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+.day-body {
+  padding: 28px;
+}
+.day-number {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--terracotta);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.day-title {
+  font-size: 1.4rem;
+  color: var(--brown-dark);
+  margin-bottom: 12px;
+}
+.day-text {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.day-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.day-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--sage-dark);
+  background: rgba(107,142,107,0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.day-expanded {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+  padding: 0 28px;
+  background: var(--cream);
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+.day-card.open .day-expanded {
+  max-height: 800px;
+  padding: 20px 28px;
+  overflow-y: auto;
+}
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.84rem;
+}
+.schedule-table tr { border-bottom: 1px solid rgba(44,24,16,0.08); }
+.schedule-table tr:last-child { border-bottom: none; }
+.schedule-table td {
+  padding: 6px 8px;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.schedule-table td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--terracotta);
+  width: 110px;
+}
+.schedule-table td:last-child {
+  font-size: 0.75rem;
+  color: var(--sage-dark);
+  white-space: nowrap;
+  text-align: right;
+  width: 100px;
+}
+.day-expand-hint {
+  font-size: 0.8rem;
+  color: var(--terracotta);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+.day-expand-hint .arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+.day-card.open .day-expand-hint .arrow {
+  transform: rotate(180deg);
+}
+
+/* ========== MAP ========== */
+.map-section {
+  background: var(--white);
+  padding-bottom: 80px;
+}
+.map-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+#route-map {
+  height: 520px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.leaflet-popup-content {
+  margin: 14px 18px !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+}
+.popup-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--brown-dark);
+  margin-bottom: 4px;
+}
+.popup-day {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ========== ACTIVITIES ========== */
+.activities {
+  background: var(--cream);
+}
+.activities-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+.activity-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.activity-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--terracotta);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.activity-card:hover::before { transform: scaleX(1); }
+.activity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.activity-icon {
+  font-size: 2.4rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.activity-title {
+  font-size: 1.15rem;
+  color: var(--brown-dark);
+  margin-bottom: 8px;
+}
+.activity-count {
+  font-size: 0.85rem;
+  color: var(--terracotta);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.activity-desc {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+.activity-check {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background: rgba(107,142,107,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--sage);
+}
+
+/* ========== CUISINE ========== */
+.cuisine { background: var(--white); }
+.cuisine-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.cuisine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.dish-card {
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+.dish-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.dish-emoji {
+  font-size: 2.8rem;
+  margin-bottom: 12px;
+  display: block;
+}
+.dish-name {
+  font-size: 1.2rem;
+  color: var(--brown-dark);
+  margin-bottom: 4px;
+}
+.dish-origin {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--terracotta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.dish-desc {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+.dish-day {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--sage);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ========== ELEVATION ========== */
+.elevation { background: var(--cream); }
+.elevation-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+.elevation-chart {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px 60px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.elevation-svg {
+  width: 100%;
+  height: 280px;
+}
+.elevation-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 0 2%;
+}
+.elevation-label {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-weight: 500;
+  max-width: 80px;
+}
+.elevation-label strong {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--terracotta);
+  margin-bottom: 2px;
+}
+.elev-y-axis {
+  position: absolute;
+  left: 8px;
+  top: 40px;
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ========== GALLERY ========== */
+.gallery {
+  background: var(--brown-dark);
+  padding: 80px 0;
+}
+.gallery-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+.gallery .section-tag { color: var(--sage); }
+.gallery .section-title { color: var(--white); }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, 220px);
+  gap: 12px;
+}
+.gallery-grid .g-item {
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+.gallery-grid .g-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.gallery-grid .g-item:hover img {
+  transform: scale(1.08);
+}
+.gallery-grid .g-item .g-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 16px 12px;
+  background: linear-gradient(transparent, rgba(44,24,16,0.7));
+  color: var(--white);
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.gallery-grid .g-item:hover .g-caption { opacity: 1; }
+.gallery-grid .g-wide { grid-column: span 2; }
+.gallery-grid .g-tall { grid-row: span 2; }
+
+/* ========== PRACTICAL INFO ========== */
+.practical { background: var(--white); }
+.practical-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.practical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.info-card {
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  transition: transform 0.3s ease;
+}
+.info-card:hover { transform: translateY(-3px); }
+.info-card-icon {
+  font-size: 2rem;
+  margin-bottom: 14px;
+  display: block;
+}
+.info-card h3 {
+  font-size: 1.15rem;
+  color: var(--brown-dark);
+  margin-bottom: 12px;
+}
+.info-card p, .info-card ul {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+.info-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.info-card ul li::before {
+  content: '\2022';
+  color: var(--terracotta);
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+}
+.difficulty-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+}
+.difficulty-bar span {
+  width: 32px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(44,24,16,0.1);
+}
+.difficulty-bar span.active { background: var(--terracotta); }
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, 160px);
+  }
+  .gallery-grid .g-wide { grid-column: span 1; }
+  .cuisine-grid { grid-template-columns: 1fr; }
+  .elevation-svg { height: 200px; }
+  .elevation-labels { flex-wrap: wrap; gap: 8px; justify-content: center; }
+}
+
+/* ========== SUSTAINABILITY ========== */
+.sustainability {
+  background: var(--brown-dark);
+  color: var(--sand);
+}
+.sustainability .section-tag { color: var(--sage); }
+.sustainability .section-title { color: var(--white); }
+.sustainability .section-desc { color: rgba(245,230,211,0.7); }
+.sustain-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px;
+}
+.sustain-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.impact-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.impact-table th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245,230,211,0.5);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(245,230,211,0.15);
+}
+.impact-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(245,230,211,0.08);
+  font-size: 0.92rem;
+}
+.impact-table td:first-child {
+  font-weight: 500;
+  color: var(--sand);
+}
+.impact-table td:last-child {
+  color: rgba(245,230,211,0.6);
+  text-align: right;
+}
+.impact-icon {
+  margin-right: 8px;
+}
+.eco-measures h3 {
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+.eco-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.eco-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 0.95rem;
+  color: rgba(245,230,211,0.8);
+  line-height: 1.6;
+}
+.eco-list .check {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: rgba(107,142,107,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  background: #1A0E08;
+  padding: 48px 0;
+  text-align: center;
+}
+.footer-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--sand);
+  margin-bottom: 8px;
+}
+.footer-sub {
+  font-size: 0.85rem;
+  color: rgba(245,230,211,0.5);
+  margin-bottom: 20px;
+}
+.footer-contact a {
+  color: var(--terracotta);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.footer-contact a:hover { text-decoration: underline; }
+.footer-copy {
+  margin-top: 24px;
+  font-size: 0.78rem;
+  color: rgba(245,230,211,0.3);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .sustain-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  section { padding: 72px 0; }
+
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255,248,240,0.98);
+    backdrop-filter: blur(20px);
+    padding: 24px;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+  }
+  .nav-links.open a { color: var(--text) !important; font-size: 1rem; }
+  .nav-toggle { display: flex; }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid .stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Itinerary: single column */
+  .timeline::before { left: 20px; }
+  .day-card,
+  .day-card:nth-child(odd),
+  .day-card:nth-child(even) {
+    width: calc(100% - 50px);
+    margin-left: 50px;
+    margin-bottom: 32px;
+  }
+  .day-dot,
+  .day-card:nth-child(odd) .day-dot,
+  .day-card:nth-child(even) .day-dot {
+    left: -40px;
+    right: auto;
+  }
+
+  .activities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #route-map { height: 380px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid .stat-card:last-child { grid-column: auto; }
+  .activities-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2.4rem; }
+  #route-map { height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== NAVIGATION ========== -->
+<nav id="navbar">
+  <div class="container">
+    <a href="#hero" class="nav-logo">The Last Caravan</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#itinerary">Itinerary</a></li>
+      <li><a href="#map">Map</a></li>
+      <li><a href="#cuisine">Cuisine</a></li>
+      <li><a href="#practical">Info</a></li>
+      <li><a href="#sustainability">Eco</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-tag">10-Day Ecotourism Route</span>
+    <h1>The Last <em>Caravan</em></h1>
+    <p class="hero-subtitle">10 Days Across Kyrgyzstan — From Silk Road Caravanserais to Celestial Mountains</p>
+    <a href="#itinerary" class="btn-primary">
+      Explore the Route
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+    </a>
+  </div>
+  <div class="hero-scroll"><span></span></div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-header fade-in">
+      <span class="section-tag">About the Route</span>
+      <h2 class="section-title">An Immersive Journey Through the Heart of Central Asia</h2>
+      <p class="section-desc">
+        Designed for adventurous travelers aged 25&ndash;55, this route takes you from the bustling bazaars of Bishkek
+        to the ancient Silk Road caravanserais of the Tien Shan. Experience nomadic culture, dramatic landscapes,
+        and authentic communities&mdash;all with zero internal flights and a deep commitment to responsible travel.
+      </p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card fade-in" style="transition-delay:0.1s">
+        <span class="stat-icon">&#9201;</span>
+        <div class="stat-number">10</div>
+        <div class="stat-label">Days</div>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.2s">
+        <span class="stat-icon">&#9968;</span>
+        <div class="stat-number">6</div>
+        <div class="stat-label">Landscapes</div>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.3s">
+        <span class="stat-icon">&#128101;</span>
+        <div class="stat-number">4</div>
+        <div class="stat-label">Ethnic Communities</div>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.4s">
+        <span class="stat-icon">&#127963;</span>
+        <div class="stat-number">3</div>
+        <div class="stat-label">UNESCO Sites</div>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.5s">
+        <span class="stat-icon">&#9992;</span>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Internal Flights</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ITINERARY ========== -->
+<section class="itinerary" id="itinerary">
+  <div class="container">
+    <div class="itinerary-header fade-in">
+      <span class="section-tag">Day by Day</span>
+      <h2 class="section-title">Your 10-Day Itinerary</h2>
+      <p class="section-desc">Click on any day to reveal more details about each leg of the journey.</p>
+    </div>
+    <div class="timeline" id="timeline">
+
+      <!-- Day 1 -->
+      <div class="day-card fade-in-left">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/bishkek-ala-too.jpg" alt="Bishkek Ala-Too Square" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 1</span>
+            <h3 class="day-title">Bishkek &mdash; Welcome</h3>
+            <p class="day-text">Arrive in the Kyrgyz capital and dive into Central Asian culture at the State Historical Museum on Ala-Too Square. Explore the legendary Osh Bazaar&mdash;the region's largest market overflowing with spices, dried fruits, and felt crafts.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127963; Culture</span>
+              <span class="day-tag">&#127858; Food</span>
+              <span class="day-tag">&#128722; Market</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>08:00–09:00</td><td>Arrival at Manas Airport, transfer to hotel</td><td>Transfer</td></tr>
+              <tr><td>09:00–10:00</td><td>Check-in, rest after the journey</td><td>Hotel</td></tr>
+              <tr><td>10:00–11:30</td><td>Brunch at a caf&eacute; (kuurdak, boorsoki)</td><td>Caf&eacute;</td></tr>
+              <tr><td>12:00–14:00</td><td>State Historical Museum + Ala-Too Square</td><td>Culture</td></tr>
+              <tr><td>14:00–15:00</td><td>Lunch (lagman, manty)</td><td>Restaurant</td></tr>
+              <tr><td>15:30–17:30</td><td>Osh Bazaar &mdash; largest market in Central Asia</td><td>Ethno</td></tr>
+              <tr><td>18:00–19:00</td><td>Walk through Oak Park, monuments</td><td>Free time</td></tr>
+              <tr><td>19:30–21:00</td><td>Dinner (beshbarmak) + route briefing</td><td>Restaurant</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 2 -->
+      <div class="day-card fade-in-right">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/supara-ethno.jpg" alt="Supara Ethno Complex" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 2</span>
+            <h3 class="day-title">Ala-Archa &amp; Supara Ethno Complex</h3>
+            <p class="day-text">Trek to the Ak-Say waterfall (7 km, 3.5 hours) through the dramatic Ala-Archa gorge. Afternoon visit to the Supara Ethno Complex for an eagle-hunting demonstration, yurt assembly workshop, and felt-making master class (shyrdak).</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127956; Trekking</span>
+              <span class="day-tag">&#129413; Eagle</span>
+              <span class="day-tag">&#127912; Craft</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–07:45</td><td>Breakfast at hotel</td><td>Hotel</td></tr>
+              <tr><td>08:00–08:40</td><td>Transfer Bishkek &rarr; Ala-Archa (40 km, 40 min)</td><td>Transfer</td></tr>
+              <tr><td>09:00–12:30</td><td>Eco-trek to Ak-Say waterfall (3.5 h, ~7 km)</td><td>Trekking</td></tr>
+              <tr><td>12:30–13:30</td><td>Picnic lunch on meadow (eco-packaging, leave no trace)</td><td>Lunch</td></tr>
+              <tr><td>14:00–14:30</td><td>Transfer &rarr; Supara Ethno Complex (Chunkurchak)</td><td>Transfer</td></tr>
+              <tr><td>14:30–16:30</td><td>Supara: yurt demo, berkutchi eagle show, national games</td><td>Traditions</td></tr>
+              <tr><td>16:30–17:30</td><td>Felt-making master class (shyrdak)</td><td>Crafts</td></tr>
+              <tr><td>18:00–18:40</td><td>Return to Bishkek</td><td>Transfer</td></tr>
+              <tr><td>19:30–21:00</td><td>Dinner at Kyrgyz cuisine restaurant</td><td>Restaurant</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 3 -->
+      <div class="day-card fade-in-left">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/burana-tower.jpg" alt="Burana Tower" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 3</span>
+            <h3 class="day-title">Bishkek &rarr; Burana &rarr; Cholpon-Ata</h3>
+            <p class="day-text">Visit the 11th-century Burana Tower minaret with its field of balbals (ancient stone figures). Drive along the northern shore of Issyk-Kul to Cholpon-Ata, home to Bronze Age petroglyphs dating to 1500 BCE.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127963; Heritage</span>
+              <span class="day-tag">&#128507; Petroglyphs</span>
+              <span class="day-tag">&#128663; Scenic Drive</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–07:45</td><td>Breakfast, check out from hotel</td><td>Hotel</td></tr>
+              <tr><td>08:00–09:30</td><td>Transfer Bishkek &rarr; Burana Tower (80 km, 1.5 h)</td><td>Transfer</td></tr>
+              <tr><td>09:30–11:00</td><td>Burana Tower: 11th-c. minaret, balbals, Karakhanid museum</td><td>Culture</td></tr>
+              <tr><td>11:00–13:30</td><td>Transfer Burana &rarr; Cholpon-Ata via Balykchy (~170 km)</td><td>Transfer</td></tr>
+              <tr><td>13:30–14:30</td><td>Lunch in Cholpon-Ata (Issyk-Kul trout)</td><td>Caf&eacute;</td></tr>
+              <tr><td>15:00–16:30</td><td>Cholpon-Ata petroglyphs &mdash; Bronze Age rock carvings</td><td>Culture</td></tr>
+              <tr><td>16:30–18:00</td><td>Free time: walk along the Issyk-Kul shore</td><td>Free time</td></tr>
+              <tr><td>18:30–20:00</td><td>Dinner in Cholpon-Ata. Overnight at guesthouse.</td><td>Guesthouse</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 4 -->
+      <div class="day-card fade-in-right">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/mountain-gorge.jpg" alt="Alpine Gorge" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 4</span>
+            <h3 class="day-title">Three Gorges &rarr; Karakol</h3>
+            <p class="day-text">Three stunning gorges in a single day: Grigorievskoye (spruce forests, mountain lakes), Semyonovskoye (alpine meadows), and Kyrchyn (jailoo&mdash;the World Nomad Games venue). End in Karakol to see the nail-less Dungan mosque.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127956; Nature</span>
+              <span class="day-tag">&#127963; Dungan</span>
+              <span class="day-tag">&#127858; Ashlyamfu</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–08:00</td><td>Breakfast in Cholpon-Ata</td><td>Guesthouse</td></tr>
+              <tr><td>08:15–08:45</td><td>Transfer &rarr; Grigorievskoye Gorge (~30 km)</td><td>Transfer</td></tr>
+              <tr><td>09:00–10:30</td><td>Trek: Schrenk spruce forest, mountain lakes</td><td>Trekking</td></tr>
+              <tr><td>10:30–11:00</td><td>Transfer &rarr; Semyonovskoye Gorge (~10 km)</td><td>Transfer</td></tr>
+              <tr><td>11:00–12:30</td><td>Semyonovskoye walk, waterfall photo stops</td><td>Geology</td></tr>
+              <tr><td>12:30–13:30</td><td>Riverside picnic lunch (local produce, eco-pack)</td><td>Lunch</td></tr>
+              <tr><td>14:00–15:30</td><td>Kyrchyn: jailoo pastures, yurt life, World Nomad Games venue</td><td>Ethno</td></tr>
+              <tr><td>15:30–18:00</td><td>Transfer Kyrchyn &rarr; Karakol (~150 km, 2.5 h)</td><td>Transfer</td></tr>
+              <tr><td>19:00–20:00</td><td>Dungan Mosque (no nails) + Holy Trinity Cathedral</td><td>Culture</td></tr>
+              <tr><td>20:00–21:00</td><td>Dinner: ashlyamfu + lagman at Damekan caf&eacute;</td><td>Ethno</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 5 -->
+      <div class="day-card fade-in-left">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/jeti-oguz.jpg" alt="Jeti-Ögüz Seven Bulls" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 5</span>
+            <h3 class="day-title">Jeti-&Ouml;g&uuml;z &rarr; Skazka &rarr; Barskoon</h3>
+            <p class="day-text">Explore the iconic red rock formation "Seven Bulls" of Jeti-&Ouml;g&uuml;z, the Mars-like Skazka Canyon ("Fairy Tale"), and Barskoon waterfall with the Gagarin monument. Yurt lunch with shorpo and kumys.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127956; Geology</span>
+              <span class="day-tag">&#127858; Yurt Lunch</span>
+              <span class="day-tag">&#128247; Scenic</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–07:45</td><td>Breakfast in Karakol</td><td>Guesthouse</td></tr>
+              <tr><td>08:00–08:30</td><td>Transfer &rarr; Jeti-&Ouml;g&uuml;z (28 km, 30 min)</td><td>Transfer</td></tr>
+              <tr><td>08:30–10:30</td><td>Seven Bulls &amp; Broken Heart rocks, light trek</td><td>Geology</td></tr>
+              <tr><td>10:30–12:00</td><td>Drive south shore &rarr; Skazka Canyon (80 km, 1.5 h)</td><td>Transfer</td></tr>
+              <tr><td>12:00–13:30</td><td>Skazka Canyon: &ldquo;Martian&rdquo; landscapes walk</td><td>Geology</td></tr>
+              <tr><td>13:30–14:30</td><td>Lunch in a yurt (shorpo, kumys)</td><td>Yurt</td></tr>
+              <tr><td>15:00–15:30</td><td>Transfer &rarr; Barskoon Gorge (30 km)</td><td>Transfer</td></tr>
+              <tr><td>15:30–17:00</td><td>Barskoon Waterfall + Gagarin monument</td><td>Nature</td></tr>
+              <tr><td>17:30–18:30</td><td>Transfer to Tamga village, check in</td><td>Guesthouse</td></tr>
+              <tr><td>19:00–20:30</td><td>Dinner in Tamga (local farm products)</td><td>Guesthouse</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 6 -->
+      <div class="day-card fade-in-right">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/son-kul-yurts.jpg" alt="Son-Kul Yurt Camp" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 6</span>
+            <h3 class="day-title">Tamga &rarr; Kochkor &rarr; Son-Kul</h3>
+            <p class="day-text">Felt-making workshop with a women's cooperative in Kochkor. Ascend through the 3,200m pass to Son-Kul Lake (3,016m)&mdash;a vast high-altitude lake. Yurt camp dinner under a sky free from light pollution.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127912; Felt Craft</span>
+              <span class="day-tag">&#9978; Yurt Camp</span>
+              <span class="day-tag">&#11088; Stargazing</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>06:30–07:15</td><td>Early breakfast in Tamga</td><td>Guesthouse</td></tr>
+              <tr><td>07:30–11:30</td><td>Transfer Tamga &rarr; Kochkor (south shore west, ~200 km, 4 h)</td><td>Transfer</td></tr>
+              <tr><td>11:30–13:00</td><td>Felt workshop: shyrdak/ala-kiyiz with local women artisans</td><td>Crafts</td></tr>
+              <tr><td>13:00–14:00</td><td>Lunch in Kochkor (home-cooked meal with locals)</td><td>Ethno</td></tr>
+              <tr><td>14:30–17:30</td><td>Transfer Kochkor &rarr; Son-Kul (120 km, ~3 h, 3200m pass)</td><td>Transfer</td></tr>
+              <tr><td>17:30–18:30</td><td>Check in at yurt camp on Son-Kul shore (3,016m)</td><td>Yurt camp</td></tr>
+              <tr><td>18:30–19:30</td><td>Lakeside walk, wild bird watching</td><td>Eco</td></tr>
+              <tr><td>20:00–21:00</td><td>Yurt dinner (beshbarmak, kymyz) + stargazing</td><td>Yurt camp</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 7 -->
+      <div class="day-card fade-in-left">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/son-kul-lake.jpg" alt="Son-Kul Lake" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 7</span>
+            <h3 class="day-title">Son-Kul &rarr; Naryn &rarr; Tash-Rabat</h3>
+            <p class="day-text">Sunrise at Son-Kul with a morning horseback ride and conversation with shepherds. Drive through Naryn to reach Tash-Rabat&mdash;a 15th-century stone caravanserai on the Silk Road at 3,200m with 31 rooms.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#128014; Horse Ride</span>
+              <span class="day-tag">&#127963; Silk Road</span>
+              <span class="day-tag">&#9968; 3200m</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>06:00–07:30</td><td>Sunrise at Son-Kul, horseback ride along the shore (1.5 h)</td><td>Horse ride</td></tr>
+              <tr><td>07:30–08:30</td><td>Yurt breakfast, conversation with shepherd family</td><td>Ethno</td></tr>
+              <tr><td>09:00–12:00</td><td>Transfer Son-Kul &rarr; Naryn (~180 km, 3 h)</td><td>Transfer</td></tr>
+              <tr><td>12:00–13:00</td><td>Lunch in Naryn (shorpo, samsa)</td><td>Caf&eacute;</td></tr>
+              <tr><td>13:30–16:00</td><td>Transfer Naryn &rarr; Tash-Rabat (100 km, 2.5 h)</td><td>Transfer</td></tr>
+              <tr><td>16:00–18:00</td><td>Tash-Rabat Caravanserai (15th c.) &mdash; Silk Road stone fortress</td><td>Culture</td></tr>
+              <tr><td>18:00–19:00</td><td>Valley walk, marmot spotting, mountain panoramas</td><td>Nature</td></tr>
+              <tr><td>19:30–21:00</td><td>Dinner at yurt camp near Tash-Rabat</td><td>Yurt camp</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 8 -->
+      <div class="day-card fade-in-right">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/tash-rabat.jpg" alt="Tash-Rabat Caravanserai" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 8</span>
+            <h3 class="day-title">Tash-Rabat &rarr; Kazarman &rarr; Arslanbob</h3>
+            <p class="day-text">An epic transit day (~9 hours) crossing two mountain passes through Kyrgyzstan's wild interior. Arrive in Arslanbob, an Uzbek community nestled in the world's largest walnut forest. Homestay with plov and samsa.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#128663; Overland</span>
+              <span class="day-tag">&#127968; Homestay</span>
+              <span class="day-tag">&#127858; Plov</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>06:00–06:45</td><td>Early breakfast in yurt</td><td>Yurt camp</td></tr>
+              <tr><td>07:00–12:00</td><td>Transfer Tash-Rabat &rarr; Kazarman (~200 km, 5 h, mountain passes)</td><td>Transfer</td></tr>
+              <tr><td>12:00–13:00</td><td>Lunch in Kazarman</td><td>Caf&eacute;</td></tr>
+              <tr><td>13:00–17:00</td><td>Transfer Kazarman &rarr; Arslanbob (~180 km, 4 h, switchbacks)</td><td>Transfer</td></tr>
+              <tr><td>17:00–18:00</td><td>Check in at homestay (Uzbek community)</td><td>Homestay</td></tr>
+              <tr><td>18:00–19:00</td><td>Village walk, meeting the host family</td><td>Ethno</td></tr>
+              <tr><td>19:30–21:00</td><td>Traditional Uzbek dinner (plov, samsa, tea)</td><td>Ethno</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 9 -->
+      <div class="day-card fade-in-left">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/arslanbob.jpg" alt="Arslanbob Walnut Forest" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 9</span>
+            <h3 class="day-title">Arslanbob &rarr; Uzgen &rarr; Osh</h3>
+            <p class="day-text">Trek to the 24m waterfall through the world's largest walnut forest. Visit the 11th-century Uzgen Minaret (UNESCO candidate), taste Uzgen's famous plov, and reach Sulaiman-Too (UNESCO) in Osh.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#127956; Trekking</span>
+              <span class="day-tag">&#127963; UNESCO</span>
+              <span class="day-tag">&#127858; Uzgen Plov</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–07:45</td><td>Breakfast at homestay (flatbread, kaymak, walnut jam)</td><td>Homestay</td></tr>
+              <tr><td>08:00–10:30</td><td>Trek to Big Waterfall (24m) through relict walnut forest</td><td>Trekking</td></tr>
+              <tr><td>10:30–11:30</td><td>Small waterfall + walnut gathering with locals (autumn)</td><td>Eco</td></tr>
+              <tr><td>12:00–12:30</td><td>Lunch in Arslanbob (manty, shashlik)</td><td>Caf&eacute;</td></tr>
+              <tr><td>12:30–14:00</td><td>Transfer Arslanbob &rarr; Uzgen (80 km, 1.5 h)</td><td>Transfer</td></tr>
+              <tr><td>14:00–15:30</td><td>Uzgen Minaret (11th c.) + Karakhanid mausoleums (UNESCO)</td><td>Culture</td></tr>
+              <tr><td>15:30–16:00</td><td>Uzgen rice &mdash; local plov tasting</td><td>Ethno</td></tr>
+              <tr><td>16:00–17:00</td><td>Transfer Uzgen &rarr; Osh (55 km, 1 h)</td><td>Transfer</td></tr>
+              <tr><td>17:30–19:00</td><td>Sulaiman-Too ascent (UNESCO) + cave museum</td><td>Culture</td></tr>
+              <tr><td>19:30–21:00</td><td>Dinner at Osh Bazaar (tandoor samsa, shashlik, plov)</td><td>Ethno</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 10 -->
+      <div class="day-card fade-in-right">
+        <div class="day-dot"></div>
+        <div class="day-inner">
+          <img class="day-img" src="images/osh-sulaiman-too.jpg" alt="Osh City & Sulaiman-Too" loading="lazy">
+          <div class="day-body">
+            <span class="day-number">Day 10</span>
+            <h3 class="day-title">Osh &mdash; Farewell</h3>
+            <p class="day-text">Final morning at the Osh Bazaar&mdash;one of the world's oldest markets with over 2,000 years of continuous trade. Pick up last souvenirs: dried fruits, spices, felt crafts. Transfer to airport for departure.</p>
+            <div class="day-tags">
+              <span class="day-tag">&#128722; Bazaar</span>
+              <span class="day-tag">&#127873; Souvenirs</span>
+              <span class="day-tag">&#9992; Departure</span>
+            </div>
+            <div class="day-expand-hint">More details <span class="arrow">&#9660;</span></div>
+          </div>
+          <div class="day-expanded">
+            <table class="schedule-table">
+              <tr><td>07:00–08:00</td><td>Breakfast at hotel</td><td>Hotel</td></tr>
+              <tr><td>08:30–10:00</td><td>Osh Bazaar &mdash; one of the oldest bazaars in the Fergana Valley</td><td>Ethno</td></tr>
+              <tr><td>10:00–11:00</td><td>Souvenir shopping: felt, spices, dried fruits</td><td>Free time</td></tr>
+              <tr><td>11:30–12:00</td><td>Transfer to Osh Airport</td><td>Transfer</td></tr>
+              <tr><td>12:30+</td><td>Departure (Osh &rarr; Bishkek or international flight)</td><td>Departure</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== GALLERY ========== -->
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="gallery-header fade-in">
+      <span class="section-tag">Visual Journey</span>
+      <h2 class="section-title">Postcards from the Route</h2>
+    </div>
+    <div class="gallery-grid">
+      <div class="g-item g-wide fade-in"><img src="images/bishkek-ala-too.jpg" alt="Bishkek" loading="lazy"><span class="g-caption">Bishkek &mdash; Ala-Too Square at sunset</span></div>
+      <div class="g-item fade-in"><img src="images/burana-tower.jpg" alt="Burana Tower" loading="lazy"><span class="g-caption">Burana Tower &amp; balbals</span></div>
+      <div class="g-item fade-in"><img src="images/supara-ethno.jpg" alt="Supara" loading="lazy"><span class="g-caption">Supara Ethno Complex</span></div>
+      <div class="g-item fade-in"><img src="images/mountain-gorge.jpg" alt="Alpine Gorge" loading="lazy"><span class="g-caption">Alpine gorge near Issyk-Kul</span></div>
+      <div class="g-item fade-in"><img src="images/jeti-oguz.jpg" alt="Jeti-Oguz" loading="lazy"><span class="g-caption">Jeti-&Ouml;g&uuml;z &mdash; Seven Bulls</span></div>
+      <div class="g-item g-wide fade-in"><img src="images/son-kul-yurts.jpg" alt="Son-Kul" loading="lazy"><span class="g-caption">Son-Kul yurt camp &mdash; 3,016m</span></div>
+      <div class="g-item fade-in"><img src="images/tash-rabat.jpg" alt="Tash-Rabat" loading="lazy"><span class="g-caption">Tash-Rabat Caravanserai</span></div>
+      <div class="g-item fade-in"><img src="images/arslanbob.jpg" alt="Arslanbob" loading="lazy"><span class="g-caption">Arslanbob walnut forest</span></div>
+      <div class="g-item fade-in"><img src="images/uzgen.jpg" alt="Uzgen" loading="lazy"><span class="g-caption">Uzgen Mausoleums</span></div>
+      <div class="g-item fade-in"><img src="images/osh-sulaiman-too.jpg" alt="Osh" loading="lazy"><span class="g-caption">Osh &mdash; Sulaiman-Too at sunset</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MAP ========== -->
+<section class="map-section" id="map">
+  <div class="container">
+    <div class="map-header fade-in">
+      <span class="section-tag">Route Map</span>
+      <h2 class="section-title">Follow the Journey</h2>
+      <p class="section-desc">An interactive map tracing the 10-day route from Bishkek to Osh, covering over 1,500 km of Kyrgyzstan's most spectacular terrain.</p>
+    </div>
+    <div id="route-map" class="fade-in"></div>
+  </div>
+</section>
+
+<!-- ========== CUISINE ========== -->
+<section class="cuisine" id="cuisine">
+  <div class="container">
+    <div class="cuisine-header fade-in">
+      <span class="section-tag">Culinary Journey</span>
+      <h2 class="section-title">Taste the Silk Road</h2>
+      <p class="section-desc">Every meal tells a story. From nomadic feasts in felt yurts to Uzbek family kitchens &mdash; the route is a journey through Central Asian gastronomy.</p>
+    </div>
+    <div class="cuisine-grid">
+      <div class="dish-card fade-in" style="transition-delay:0.05s">
+        <span class="dish-day">Day 1</span>
+        <h3 class="dish-name">Beshbarmak</h3>
+        <div class="dish-origin">Kyrgyz &bull; National dish</div>
+        <p class="dish-desc">Horse or lamb meat served on hand-pulled noodles with onion broth. Eaten with hands (&ldquo;besh barmak&rdquo; = five fingers). The quintessential nomadic feast.</p>
+      </div>
+      <div class="dish-card fade-in" style="transition-delay:0.1s">
+        <span class="dish-day">Day 4</span>
+        <h3 class="dish-name">Ashlyamfu &amp; Lagman</h3>
+        <div class="dish-origin">Dungan &amp; Uyghur &bull; Karakol</div>
+        <p class="dish-desc">Ashlyamfu: cold noodle soup with starch jelly and spicy vinegar sauce. Lagman: hand-pulled noodles in rich tomato-lamb broth. Two cultures, one city.</p>
+      </div>
+      <div class="dish-card fade-in" style="transition-delay:0.15s">
+        <span class="dish-day">Day 5</span>
+        <h3 class="dish-name">Shorpo &amp; Kumys</h3>
+        <div class="dish-origin">Nomadic &bull; Yurt lunch</div>
+        <p class="dish-desc">Hearty mutton broth with potatoes and carrots, paired with kumys &mdash; fermented mare's milk, slightly fizzy and sour. An authentic shepherd's lunch at 2,500m.</p>
+      </div>
+      <div class="dish-card fade-in" style="transition-delay:0.2s">
+        <span class="dish-day">Day 6</span>
+        <h3 class="dish-name">Kymyz Evening</h3>
+        <div class="dish-origin">Nomadic &bull; Son-Kul</div>
+        <p class="dish-desc">An evening in a yurt at 3,016m. Beshbarmak from fresh lamb, bowls of kymyz, boorsoki (fried bread), and kaymak (clotted cream) under a canopy of stars.</p>
+      </div>
+      <div class="dish-card fade-in" style="transition-delay:0.25s">
+        <span class="dish-day">Day 8</span>
+        <h3 class="dish-name">Plov &amp; Samsa</h3>
+        <div class="dish-origin">Uzbek &bull; Arslanbob</div>
+        <p class="dish-desc">Cauldron-cooked pilaf (rice, lamb, carrots, chickpeas) with tandoor-baked samsa pastries. Home-cooked by your Uzbek host family with local walnuts and herbs.</p>
+      </div>
+      <div class="dish-card fade-in" style="transition-delay:0.3s">
+        <span class="dish-day">Day 9</span>
+        <h3 class="dish-name">Uzgen Plov</h3>
+        <div class="dish-origin">Uzbek &bull; Uzgen</div>
+        <p class="dish-desc">A regional masterpiece: made with local Uzgen rice (dark, fragrant, and slightly sticky). Unlike Fergana plov, it uses a drier technique and is considered the finest in the region.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ACTIVITIES ========== -->
+<section class="activities" id="activities">
+  <div class="container">
+    <div class="activities-header fade-in">
+      <span class="section-tag">Activities Covered</span>
+      <h2 class="section-title">Five Pillars of Ecotourism</h2>
+      <p class="section-desc">Every mandatory activity category is fully covered across the 10-day route.</p>
+    </div>
+    <div class="activities-grid">
+      <div class="activity-card fade-in" style="transition-delay:0.1s">
+        <span class="activity-check">&#10003;</span>
+        <span class="activity-icon">&#127963;</span>
+        <h3 class="activity-title">Cultural &amp; Historical</h3>
+        <div class="activity-count">7 sites</div>
+        <p class="activity-desc">Burana Tower, petroglyphs, Dungan Mosque, Tash-Rabat, Uzgen Minaret, Sulaiman-Too, Osh Bazaar</p>
+      </div>
+      <div class="activity-card fade-in" style="transition-delay:0.2s">
+        <span class="activity-check">&#10003;</span>
+        <span class="activity-icon">&#9968;</span>
+        <h3 class="activity-title">Geological &amp; Natural</h3>
+        <div class="activity-count">8 sites</div>
+        <p class="activity-desc">Ala-Archa, Issyk-Kul, three gorges, Jeti-&Ouml;g&uuml;z, Skazka Canyon, Barskoon, Son-Kul, walnut forest</p>
+      </div>
+      <div class="activity-card fade-in" style="transition-delay:0.3s">
+        <span class="activity-check">&#10003;</span>
+        <span class="activity-icon">&#129413;</span>
+        <h3 class="activity-title">Folk Traditions</h3>
+        <div class="activity-count">3 traditions</div>
+        <p class="activity-desc">Berkutchi (eagle hunting), felt-making (shyrdak), yurt assembly &amp; nomadic lifestyle</p>
+      </div>
+      <div class="activity-card fade-in" style="transition-delay:0.4s">
+        <span class="activity-check">&#10003;</span>
+        <span class="activity-icon">&#128694;</span>
+        <h3 class="activity-title">Eco-Trekking</h3>
+        <div class="activity-count">6 routes</div>
+        <p class="activity-desc">Ak-Say waterfall, three gorges, Skazka, Barskoon waterfall, Son-Kul horseback, Arslanbob waterfall</p>
+      </div>
+      <div class="activity-card fade-in" style="transition-delay:0.5s">
+        <span class="activity-check">&#10003;</span>
+        <span class="activity-icon">&#128101;</span>
+        <h3 class="activity-title">Ethno-Cultural</h3>
+        <div class="activity-count">4 communities</div>
+        <p class="activity-desc">Kyrgyz (nomads, shepherds), Dungan (Karakol), Uyghur (Karakol cuisine), Uzbek (Arslanbob, Osh)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ELEVATION PROFILE ========== -->
+<section class="elevation" id="elevation">
+  <div class="container">
+    <div class="elevation-header fade-in">
+      <span class="section-tag">Route Profile</span>
+      <h2 class="section-title">Elevation Across 10 Days</h2>
+      <p class="section-desc">From Bishkek at 800m to the Son-Kul and Tash-Rabat plateaus at 3,200m &mdash; and back down to Osh at 1,000m.</p>
+    </div>
+    <div class="elevation-chart fade-in">
+      <div class="elev-y-axis">
+        <span>3200m</span>
+        <span>2400m</span>
+        <span>1600m</span>
+        <span>800m</span>
+      </div>
+      <svg class="elevation-svg" viewBox="0 0 1000 280" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C65D3E" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#C65D3E" stop-opacity="0.03"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="50" y1="20" x2="970" y2="20" stroke="#e8ddd0" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="50" y1="100" x2="970" y2="100" stroke="#e8ddd0" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="50" y1="180" x2="970" y2="180" stroke="#e8ddd0" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="50" y1="260" x2="970" y2="260" stroke="#e8ddd0" stroke-width="1"/>
+        <!-- Fill area: 800, 1600, 1770, 1650, 3016, 3200, 1600, 1000 -->
+        <!-- Y scale: 800m=240, 1000m=220, 1600m=160, 1650m=155, 1770m=143, 3016m=18, 3200m=0 => mapped to 20..255 -->
+        <path d="M70,232 L202,155 L334,140 L466,148 L598,28 L730,18 L862,155 L960,206 L960,260 L70,260 Z" fill="url(#elevGrad)"/>
+        <!-- Line -->
+        <polyline points="70,232 202,155 334,140 466,148 598,28 730,18 862,155 960,206"
+          fill="none" stroke="#C65D3E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- Dots -->
+        <circle cx="70" cy="232" r="6" fill="#C65D3E" stroke="#fff" stroke-width="2"/>
+        <circle cx="202" cy="155" r="5" fill="#C65D3E"/>
+        <circle cx="334" cy="140" r="5" fill="#C65D3E"/>
+        <circle cx="466" cy="148" r="5" fill="#C65D3E"/>
+        <circle cx="598" cy="28" r="6" fill="#6B8E6B" stroke="#fff" stroke-width="2"/>
+        <circle cx="730" cy="18" r="7" fill="#6B8E6B" stroke="#fff" stroke-width="2"/>
+        <circle cx="862" cy="155" r="5" fill="#C65D3E"/>
+        <circle cx="960" cy="206" r="6" fill="#C65D3E" stroke="#fff" stroke-width="2"/>
+        <!-- Peak label -->
+        <text x="730" y="12" font-family="Inter,sans-serif" font-size="11" fill="#6B8E6B" text-anchor="middle" font-weight="600">3,200m</text>
+        <text x="598" y="22" font-family="Inter,sans-serif" font-size="10" fill="#6B8E6B" text-anchor="end" font-weight="500" dx="-12">3,016m</text>
+      </svg>
+      <div class="elevation-labels">
+        <div class="elevation-label"><strong>D1&ndash;2</strong>Bishkek<br>800m</div>
+        <div class="elevation-label"><strong>D3</strong>Cholpon-Ata<br>1,600m</div>
+        <div class="elevation-label"><strong>D4</strong>Karakol<br>1,770m</div>
+        <div class="elevation-label"><strong>D5</strong>Tamga<br>1,650m</div>
+        <div class="elevation-label"><strong>D6</strong>Son-Kul<br>3,016m</div>
+        <div class="elevation-label"><strong>D7</strong>Tash-Rabat<br>3,200m</div>
+        <div class="elevation-label"><strong>D8</strong>Arslanbob<br>1,600m</div>
+        <div class="elevation-label"><strong>D9&ndash;10</strong>Osh<br>1,000m</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRACTICAL INFO ========== -->
+<section class="practical" id="practical">
+  <div class="container">
+    <div class="practical-header fade-in">
+      <span class="section-tag">Before You Go</span>
+      <h2 class="section-title">Practical Information</h2>
+      <p class="section-desc">Everything you need to know to prepare for your 10-day Kyrgyz adventure.</p>
+    </div>
+    <div class="practical-grid">
+      <div class="info-card fade-in" style="transition-delay:0.05s">
+        <span class="info-card-icon">&#128197;</span>
+        <h3>Best Season</h3>
+        <p>June through September. Son-Kul yurt camps open mid-June to mid-September only. July&ndash;August offers the warmest weather and driest trails. September brings golden autumn colors and walnut harvest in Arslanbob.</p>
+      </div>
+      <div class="info-card fade-in" style="transition-delay:0.1s">
+        <span class="info-card-icon">&#127956;</span>
+        <h3>Difficulty Level</h3>
+        <p>Moderate. Trekking at altitudes up to 3,200m. Longest trek: 7 km (Ala-Archa). Long driving days (up to 9h on Day 8). Moderate fitness required.</p>
+        <div class="difficulty-bar">
+          <span class="active"></span>
+          <span class="active"></span>
+          <span class="active"></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <div class="info-card fade-in" style="transition-delay:0.15s">
+        <span class="info-card-icon">&#127890;</span>
+        <h3>What to Pack</h3>
+        <ul>
+          <li>Layered clothing (0&deg;C at Son-Kul nights)</li>
+          <li>Sturdy hiking boots (broken in)</li>
+          <li>Sunscreen SPF 50+ &amp; sunglasses</li>
+          <li>Reusable water bottle (provided)</li>
+          <li>Headlamp for yurt camps</li>
+          <li>Power bank (limited charging)</li>
+        </ul>
+      </div>
+      <div class="info-card fade-in" style="transition-delay:0.2s">
+        <span class="info-card-icon">&#128176;</span>
+        <h3>Budget Estimate</h3>
+        <p>Approximately $80&ndash;120/day including all accommodation, meals, transport, guides, and workshop fees. International flights not included. Kyrgyzstan is visa-free for 60+ countries.</p>
+      </div>
+      <div class="info-card fade-in" style="transition-delay:0.25s">
+        <span class="info-card-icon">&#128241;</span>
+        <h3>Connectivity</h3>
+        <p>Mobile coverage is good in cities and along Issyk-Kul. No signal at Son-Kul, Tash-Rabat, and mountain passes. Buy a local SIM (Megacom or Beeline) at Bishkek airport for ~$5. Wi-Fi available at hotels.</p>
+      </div>
+      <div class="info-card fade-in" style="transition-delay:0.3s">
+        <span class="info-card-icon">&#128652;</span>
+        <h3>Transport</h3>
+        <p>Shared minibus for the entire group (8&ndash;12 people). No internal flights &mdash; the overland route is part of the experience. Total distance: ~1,500 km across Kyrgyzstan's most scenic roads.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SUSTAINABILITY ========== -->
+<section class="sustainability" id="sustainability">
+  <div class="container">
+    <div class="sustain-header fade-in">
+      <span class="section-tag">Responsible Travel</span>
+      <h2 class="section-title">Sustainability &amp; Ecological Impact</h2>
+      <p class="section-desc">Transparent environmental data per person for the full 10-day journey.</p>
+    </div>
+    <div class="sustain-content">
+      <div class="fade-in-left">
+        <table class="impact-table">
+          <thead>
+            <tr>
+              <th>Impact Category</th>
+              <th>Per Person / 10 Days</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="impact-icon">&#128465;</span>Solid Waste</td>
+              <td>7 &ndash; 15 kg (leave no trace)</td>
+            </tr>
+            <tr>
+              <td><span class="impact-icon">&#128167;</span>Water Consumption</td>
+              <td>85 &ndash; 110 L</td>
+            </tr>
+            <tr>
+              <td><span class="impact-icon">&#128168;</span>CO&#8322; (Breathing)</td>
+              <td>10 &ndash; 20 kg</td>
+            </tr>
+            <tr>
+              <td><span class="impact-icon">&#128652;</span>CO&#8322; (Transport)</td>
+              <td>50 &ndash; 150 kg (shared minibus)</td>
+            </tr>
+            <tr>
+              <td><span class="impact-icon">&#9992;</span>CO&#8322; (Flight)</td>
+              <td>600 &ndash; 1,200 kg (offset program)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fade-in-right">
+        <h3>Key Measures</h3>
+        <ul class="eco-list">
+          <li>
+            <span class="check">&#10003;</span>
+            <span>Reusable water bottles provided to every traveler; no single-use plastic purchased on route</span>
+          </li>
+          <li>
+            <span class="check">&#10003;</span>
+            <span>100% local food sourcing&mdash;meals prepared by host families and community kitchens</span>
+          </li>
+          <li>
+            <span class="check">&#10003;</span>
+            <span>Established trails only&mdash;no off-trail trekking to protect fragile alpine ecosystems</span>
+          </li>
+          <li>
+            <span class="check">&#10003;</span>
+            <span>Full waste pack-out policy: all waste carried to nearest processing point</span>
+          </li>
+          <li>
+            <span class="check">&#10003;</span>
+            <span>Group limit of 8&ndash;12 tourists to minimize ecological footprint and maximize local benefit</span>
+          </li>
+          <li>
+            <span class="check">&#10003;</span>
+            <span>Carbon offset program available for international flights via verified partners</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">The Last Caravan</div>
+    <div class="footer-sub">AUCA Ecotourism Project 2026</div>
+    <div class="footer-contact">
+      <a href="mailto:ecotour@auca.kg">ecotour@auca.kg</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 The Last Caravan. All rights reserved. Created for educational purposes.</div>
+  </div>
+</footer>
+
+<script>
+/* ========== NAVIGATION ========== */
+const navbar = document.getElementById('navbar');
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 80);
+});
+
+navToggle.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+});
+
+// Close mobile nav on link click
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => navLinks.classList.remove('open'));
+});
+
+/* ========== SCROLL ANIMATIONS ========== */
+const observerOptions = {
+  root: null,
+  rootMargin: '0px 0px -60px 0px',
+  threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right').forEach(el => {
+  observer.observe(el);
+});
+
+/* ========== DAY CARD EXPAND ========== */
+document.querySelectorAll('.day-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const wasOpen = card.classList.contains('open');
+    // Close all others
+    document.querySelectorAll('.day-card.open').forEach(c => c.classList.remove('open'));
+    if (!wasOpen) card.classList.add('open');
+  });
+});
+
+/* ========== LEAFLET MAP ========== */
+const mapPoints = [
+  { name: 'Bishkek', day: 'Day 1', lat: 42.8746, lng: 74.5698 },
+  { name: 'Ala-Archa National Park', day: 'Day 2', lat: 42.6500, lng: 74.4833 },
+  { name: 'Supara Ethno Complex', day: 'Day 2', lat: 42.6833, lng: 74.3667 },
+  { name: 'Burana Tower', day: 'Day 3', lat: 42.7475, lng: 75.2531 },
+  { name: 'Cholpon-Ata', day: 'Day 3', lat: 42.6500, lng: 77.0833 },
+  { name: 'Grigorievskoye Gorge', day: 'Day 4', lat: 42.7167, lng: 77.3167 },
+  { name: 'Kyrchyn Valley', day: 'Day 4', lat: 42.6833, lng: 77.1000 },
+  { name: 'Karakol', day: 'Day 4', lat: 42.4833, lng: 78.3833 },
+  { name: 'Jeti-\u00D6g\u00FCz', day: 'Day 5', lat: 42.3333, lng: 78.2333 },
+  { name: 'Skazka Canyon', day: 'Day 5', lat: 42.2833, lng: 77.6000 },
+  { name: 'Barskoon Waterfall', day: 'Day 5', lat: 42.1667, lng: 77.5833 },
+  { name: 'Tamga', day: 'Day 5', lat: 42.1500, lng: 77.5500 },
+  { name: 'Kochkor', day: 'Day 6', lat: 42.0167, lng: 75.7500 },
+  { name: 'Son-Kul Lake', day: 'Day 6\u20137', lat: 41.8333, lng: 75.1500 },
+  { name: 'Naryn', day: 'Day 7', lat: 41.4167, lng: 76.0000 },
+  { name: 'Tash-Rabat', day: 'Day 7', lat: 40.8167, lng: 75.2833 },
+  { name: 'Kazarman', day: 'Day 8', lat: 41.4000, lng: 74.0333 },
+  { name: 'Arslanbob', day: 'Day 8\u20139', lat: 41.3333, lng: 72.9333 },
+  { name: 'Uzgen', day: 'Day 9', lat: 40.7667, lng: 73.3000 },
+  { name: 'Osh', day: 'Day 9\u201310', lat: 40.5333, lng: 72.8000 }
+];
+
+// Main route (simplified: key overnight stops)
+const routeCoords = [
+  [42.8746, 74.5698],  // Bishkek
+  [42.6500, 74.4833],  // Ala-Archa
+  [42.8746, 74.5698],  // Back to Bishkek
+  [42.7475, 75.2531],  // Burana
+  [42.6500, 77.0833],  // Cholpon-Ata
+  [42.7167, 77.3167],  // Grigorievskoye
+  [42.6833, 77.1000],  // Kyrchyn
+  [42.4833, 78.3833],  // Karakol
+  [42.3333, 78.2333],  // Jeti-Oguz
+  [42.2833, 77.6000],  // Skazka
+  [42.1667, 77.5833],  // Barskoon
+  [42.1500, 77.5500],  // Tamga
+  [42.0167, 75.7500],  // Kochkor
+  [41.8333, 75.1500],  // Son-Kul
+  [41.4167, 76.0000],  // Naryn
+  [40.8167, 75.2833],  // Tash-Rabat
+  [41.4000, 74.0333],  // Kazarman
+  [41.3333, 72.9333],  // Arslanbob
+  [40.7667, 73.3000],  // Uzgen
+  [40.5333, 72.8000]   // Osh
+];
+
+const map = L.map('route-map', {
+  scrollWheelZoom: false
+}).setView([41.8, 75.5], 7);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18
+}).addTo(map);
+
+// Custom marker icon
+const markerIcon = L.divIcon({
+  className: 'custom-marker',
+  html: '<div style="width:14px;height:14px;background:#C65D3E;border:3px solid #FFF8F0;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>',
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  popupAnchor: [0, -10]
+});
+
+const startIcon = L.divIcon({
+  className: 'custom-marker',
+  html: '<div style="width:20px;height:20px;background:#6B8E6B;border:3px solid #FFF8F0;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -14]
+});
+
+const endIcon = L.divIcon({
+  className: 'custom-marker',
+  html: '<div style="width:20px;height:20px;background:#C65D3E;border:3px solid #FFF8F0;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -14]
+});
+
+mapPoints.forEach((point, i) => {
+  let icon = markerIcon;
+  if (i === 0) icon = startIcon;
+  if (i === mapPoints.length - 1) icon = endIcon;
+
+  L.marker([point.lat, point.lng], { icon })
+    .addTo(map)
+    .bindPopup(`<div class="popup-day">${point.day}</div><div class="popup-title">${point.name}</div>`);
+});
+
+// Route line
+L.polyline(routeCoords, {
+  color: '#C65D3E',
+  weight: 3,
+  opacity: 0.7,
+  dashArray: '8, 8',
+  smoothFactor: 1.5
+}).addTo(map);
+
+// Fit bounds with padding
+const bounds = L.latLngBounds(routeCoords);
+map.fitBounds(bounds, { padding: [40, 40] });
+</script>
+
+</body>
+</html>
